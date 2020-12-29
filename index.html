@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Notes List</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+<div id="Notes-list">
+    <div class="header">
+        <h1>{{ header.toLocaleUpperCase() }}</h1>
+        <button v-if="state === 'default'" class="btn btn-primary" @click="changeState('edit')">Add Note</button>
+        <button v-else class="btn btn-cancel" @click="changeState('default')">Cancel</button>
+    </div>
+    <div v-if="state === 'edit'" class="add-note-form">
+        <input v-model="newNote" type="text" placeholder="Add a note!" @keyup.enter="saveNote">
+        <p>{{ characterCount }}</p>
+        <button class="btn btn-primary" @click="saveNote" v-bind:disabled="newNote.length === 0">Save Note</button>
+    </div>
+    <ul>
+        <li v-for="note in reversedNotes" :class="{strikeout: note.cleared}" @click="toggleCleared(note)">
+            {{ note.label }}
+        </li>
+    </ul>
+    <p v-if="notes.length === 0">It's empty here!</p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+<script>
+    const NotesList = new Vue({
+        el: '#Notes-list',
+        data: {
+            state: 'default',
+            header: 'Notes List APP',
+            newNote: '',
+            notes: []
+        },
+        computed: {
+            reversedNotes() {
+                return this.notes.slice(0).reverse();
+            },
+            characterCount() {
+                return this.newNote.length;
+            }
+        },
+        methods: {
+            saveNote: function () {
+                this.notes.push({
+                        label: this.newNote,
+                        cleared: false,
+                    }
+                );
+                this.newNote = '';
+            },
+            changeState: function (newState) {
+                this.state = newState;
+                this.newNote = '';
+            },
+            toggleCleared: function (note) {
+                note.cleared = !note.cleared;
+            },
+        }
+    });
+</script>
+</body>
+</html>
